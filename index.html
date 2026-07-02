@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SEO Dashboard — businesscoachvas.com</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171d2b; --panel2:#1d2536; --line:#2a3346;
+    --text:#e8edf6; --muted:#93a0b8; --accent:#4f8cff; --good:#37c986; --bad:#ff6b6b; --warn:#ffcf5c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding:32px 20px 64px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:28px}
+  h1{font-size:24px;font-weight:700;letter-spacing:-.3px}
+  h1 span{color:var(--accent)}
+  .sub{color:var(--muted);font-size:13px;margin-top:6px}
+  .stamp{text-align:right;font-size:12px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+  .stamp b{color:var(--text);display:block;font-size:13px}
+  .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;vertical-align:middle}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:34px 0 14px;font-weight:600}
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g2{grid-template-columns:1fr 1fr}
+  @media(max-width:820px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .card .val{font-size:30px;font-weight:700;margin:8px 0 6px;letter-spacing:-.5px}
+  .delta{font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+  .delta .prev{color:var(--muted);font-weight:400;margin-left:6px}
+  .up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 6px 2px;overflow:hidden}
+  .chan{display:flex;justify-content:space-between;font-size:14px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .chan:last-child{border-bottom:none}
+  .chan .n{color:var(--muted);font-variant-numeric:tabular-nums}
+  .sr{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:820px){.sr{grid-template-columns:1fr 1fr}}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;flex-wrap:wrap;gap:6px 18px}
+  code{background:var(--panel2);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--muted)}
+  .err{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.4);color:#ffb3b3;border-radius:12px;padding:14px 16px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>SEO Performance — <span>businesscoachvas.com</span></h1>
+      <div class="sub">Search Console · Google Analytics 4 · Semrush</div>
+    </div>
+    <div class="stamp">
+      <b><span class="live"></span>Auto-refreshed daily</b>
+      <span id="lastUpdated">Loading…</span><br>
+      <span id="windowLabel"></span>
+    </div>
+  </header>
+
+  <div id="root"><p style="color:var(--muted)">Loading dashboard data…</p></div>
+
+  <footer>
+    <span>Sources: Google Search Console (<code>sc-domain:businesscoachvas.com</code>) · GA4 (<code>properties/509524329</code>) · Semrush (us)</span>
+    <span>Refreshed automatically each day by a GitHub Action.</span>
+    <span>Prepared by The VA Group.</span>
+  </footer>
+</div>
+
+<script>
+const fmtInt = n => (n==null?"—":Math.round(n).toLocaleString());
+const fmtDur = s => { if(s==null) return "—"; const m=Math.floor(s/60), sec=Math.round(s%60); return m+"m "+sec+"s"; };
+const pct = n => (n==null?"—":(n*100).toFixed(2)+"%");
+
+function delta(cur, prev, opts={}){
+  if(prev==null || prev===0 || cur==null) return '<span class="delta flat">■ n/a</span>';
+  const change = (cur-prev)/prev;
+  const good = opts.lowerIsBetter ? change<0 : change>0;
+  const flat = Math.abs(change) < 0.005;
+  const cls = flat ? 'flat' : (good ? 'up' : 'down');
+  const arrow = flat ? '■' : (change>0 ? '▲' : '▼');
+  const prevTxt = opts.fmt ? opts.fmt(prev) : fmtInt(prev);
+  return `<span class="delta ${cls}">${arrow} ${Math.abs(change*100).toFixed(1)}%<span class="prev">vs ${prevTxt}</span></span>`;
+}
+function card(label, valTxt, deltaHtml){
+  return `<div class="card"><div class="label">${label}</div><div class="val">${valTxt}</div>${deltaHtml||''}</div>`;
+}
+
+function render(d){
+  document.getElementById('lastUpdated').textContent =
+    'Last updated: ' + new Date(d.last_updated).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
+  const w = d.window;
+  document.getElementById('windowLabel').textContent =
+    `Window: ${w.current[0]} → ${w.current[1]} (28d) vs ${w.prior[0]} → ${w.prior[1]}`;
+
+  const g = d.gsc, a = d.ga4;
+  const engCur = a.current.sessions ? a.current.engagedSessions/a.current.sessions : null;
+  const engPrev = a.prior.sessions ? a.prior.engagedSessions/a.prior.sessions : null;
+  const ppCur = a.current.sessions ? a.current.pageviews/a.current.sessions : null;
+  const ppPrev = a.prior.sessions ? a.prior.pageviews/a.prior.sessions : null;
+
+  let html = '';
+  html += '<h2>Google Search Console — Organic Search</h2><div class="grid g4">';
+  html += card('Clicks', fmtInt(g.current.clicks), delta(g.current.clicks, g.prior.clicks));
+  html += card('Impressions', fmtInt(g.current.impressions), delta(g.current.impressions, g.prior.impressions));
+  html += card('Avg. CTR', pct(g.current.ctr), delta(g.current.ctr, g.prior.ctr, {fmt:pct}));
+  html += card('Avg. Position', g.current.position.toFixed(1), delta(g.current.position, g.prior.position, {lowerIsBetter:true, fmt:v=>v.toFixed(1)}));
+  html += '</div>';
+
+  html += '<h2>Google Analytics 4 — Site Traffic</h2><div class="grid g4">';
+  html += card('Sessions', fmtInt(a.current.sessions), delta(a.current.sessions, a.prior.sessions));
+  html += card('Total Users', fmtInt(a.current.totalUsers), delta(a.current.totalUsers, a.prior.totalUsers));
+  html += card('New Users', fmtInt(a.current.newUsers), delta(a.current.newUsers, a.prior.newUsers));
+  html += card('Pageviews', fmtInt(a.current.pageviews), delta(a.current.pageviews, a.prior.pageviews));
+  html += card('Engaged Sessions', fmtInt(a.current.engagedSessions), delta(a.current.engagedSessions, a.prior.engagedSessions));
+  html += card('Engagement Rate', pct(engCur), delta(engCur, engPrev, {fmt:pct}));
+  html += card('Avg. Session Duration', fmtDur(a.current.avgSessionDuration), delta(a.current.avgSessionDuration, a.prior.avgSessionDuration, {fmt:fmtDur}));
+  html += card('Pages / Session', ppCur==null?'—':ppCur.toFixed(2), delta(ppCur, ppPrev, {fmt:v=>v.toFixed(2)}));
+  html += '</div>';
+
+  html += '<div class="grid g2"><div><h2>Traffic by Channel (current)</h2><div class="panel">';
+  (d.channels||[]).forEach(c => html += `<div class="chan"><span>${c.channel}</span><span class="n">${fmtInt(c.sessions)}</span></div>`);
+  html += '</div></div><div><h2>Semrush — Domain Snapshot</h2><div class="sr">';
+  const s = d.semrush;
+  html += card('Organic Keywords', fmtInt(s.organic_keywords));
+  html += card('Est. Traffic / mo', fmtInt(s.organic_traffic));
+  html += card('Backlinks', fmtInt(s.backlinks_total));
+  html += card('Ref. Domains', fmtInt(s.referring_domains));
+  html += card('Authority Score', fmtInt(s.authority_score));
+  html += card('Follow Links', fmtInt(s.follows));
+  html += card('Nofollow Links', fmtInt(s.nofollows));
+  html += card('Adwords Keywords', fmtInt(s.adwords_keywords||0));
+  html += '</div></div></div>';
+
+  const qTable = (title, rows, keyName) => {
+    let t = `<h2>${title}</h2><div class="panel"><table><thead><tr><th>${keyName}</th><th class="num">Clicks</th><th class="num">Impr.</th><th class="num">Position</th></tr></thead><tbody>`;
+    (rows||[]).forEach(r => t += `<tr><td>${(r.query||r.page)}</td><td class="num">${fmtInt(r.clicks)}</td><td class="num">${fmtInt(r.impressions)}</td><td class="num">${r.position.toFixed(1)}</td></tr>`);
+    return t + '</tbody></table></div>';
+  };
+  html += qTable('Top Queries (current window)', d.queries, 'Query');
+  html += qTable('Top Pages (current window)', d.pages, 'Page');
+
+  document.getElementById('root').innerHTML = html;
+}
+
+fetch('data.json?_=' + Date.now())
+  .then(r => { if(!r.ok) throw new Error('data.json '+r.status); return r.json(); })
+  .then(render)
+  .catch(e => { document.getElementById('root').innerHTML =
+    '<div class="err">Could not load dashboard data ('+e.message+'). The daily refresh may not have run yet — check the repo Actions tab.</div>';
+    document.getElementById('lastUpdated').textContent = 'Data unavailable'; });
+</script>
+</body>
+</html>
