@@ -1,0 +1,42 @@
+{
+  "site": "businesscoachvas.com",
+  "last_updated": "2026-07-02T21:00:00Z",
+  "window": { "current": ["2026-06-04", "2026-07-01"], "prior": ["2026-05-07", "2026-06-03"] },
+  "gsc": {
+    "current": { "clicks": 34, "impressions": 15420, "ctr": 0.002204928664072633, "position": 8.335992217898832 },
+    "prior":   { "clicks": 79, "impressions": 43378, "ctr": 0.001821199686477016, "position": 8.315851353220527 }
+  },
+  "ga4": {
+    "current": { "sessions": 75, "totalUsers": 64, "newUsers": 53, "engagedSessions": 30, "avgSessionDuration": 111.14543864, "pageviews": 79 },
+    "prior":   { "sessions": 264, "totalUsers": 211, "newUsers": 204, "engagedSessions": 119, "avgSessionDuration": 106.38664102272728, "pageviews": 314 }
+  },
+  "channels": [
+    { "channel": "Direct", "sessions": 42 },
+    { "channel": "Organic Search", "sessions": 22 },
+    { "channel": "Referral", "sessions": 6 },
+    { "channel": "AI Assistant", "sessions": 4 },
+    { "channel": "Unassigned", "sessions": 1 }
+  ],
+  "queries": [
+    { "query": "business coach vas", "clicks": 5, "impressions": 30, "position": 2.0 },
+    { "query": "business coaching tools", "clicks": 1, "impressions": 62, "position": 7.77 },
+    { "query": "businesscoachvas.com", "clicks": 1, "impressions": 12, "position": 1.92 },
+    { "query": "affordable pipeline coaching tools for small teams", "clicks": 0, "impressions": 18, "position": 7.72 },
+    { "query": "affordable virtual assistants for coaches", "clicks": 0, "impressions": 8, "position": 5.75 },
+    { "query": "coaching for retention", "clicks": 0, "impressions": 3, "position": 12.33 }
+  ],
+  "pages": [
+    { "page": "/", "clicks": 10, "impressions": 820, "position": 18.27 },
+    { "page": "/blog/business-coach-vas-scheduling-software-guide/", "clicks": 8, "impressions": 344, "position": 6.07 },
+    { "page": "/blog/business-coaching-tools-resources-complete-guide/", "clicks": 4, "impressions": 769, "position": 7.40 },
+    { "page": "/blog/coaching-scheduling-software-va-guide/", "clicks": 3, "impressions": 835, "position": 9.07 },
+    { "page": "/blog/crm-systems-for-coaches-guide/", "clicks": 3, "impressions": 4993, "position": 7.88 },
+    { "page": "/blog/coaching-client-retention-strategies/", "clicks": 2, "impressions": 893, "position": 5.89 },
+    { "page": "/blog/virtual-assistant-for-business-coaches-complete-guide/", "clicks": 2, "impressions": 1300, "position": 8.56 }
+  ],
+  "semrush": {
+    "organic_keywords": 62, "organic_traffic": 43, "rank": 5129313,
+    "backlinks_total": 615, "referring_domains": 181, "authority_score": 20,
+    "follows": 296, "nofollows": 321, "adwords_keywords": 0
+  }
+}
